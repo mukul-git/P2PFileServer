@@ -1,5 +1,9 @@
 package edu.ufl.p2pFileserver;
 
+import java.net.ServerSocket;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -7,7 +11,7 @@ public interface IPeer {
 
 
     Logger LOGGER = Logger.getLogger(FileOwner.class.getName());
-
+    String partFileSuffix = ".part";
 
     static int getPort(String[] args, String portTypeName) {
         boolean correctPortFound = false;
@@ -33,10 +37,25 @@ public interface IPeer {
     }
 
 
-    void retrieveChunkListFromOwner();
+    List<Long> getFileChunkList();
+
+    void setFileChunkListWithSize(Map<Long, Long> fileOwnerFileChunkListWithSize);
+
+    Map<Long, Long> getFileChunkListWithSize();
+
+    Path getStagingDir();
+
+    boolean addToFileChunkList(final Long filePartId);
+
+    ServerSocket getServerSocket();
 
     void setUploadNeighborPort(final int port);
 
     void setDownloadNeighborPort(final int port);
 
+    List<Long> getRemainingFileChunkList();
+
+    String getPeerId();
+
+    void updateDownloadNeighborFileChunkListWithSize(Map<Long, Long> uploadNeighborFileChunkListWithSize);
 }

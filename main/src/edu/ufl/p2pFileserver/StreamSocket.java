@@ -4,6 +4,7 @@ package edu.ufl.p2pFileserver;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class StreamSocket extends Socket {
 
@@ -29,17 +30,21 @@ public class StreamSocket extends Socket {
         output = new PrintWriter(new OutputStreamWriter(outStream));
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(final String message) {
         output.print(message + "\n");
         output.flush();
     }
 
-    public String receiveMessage() {
+    public String receiveMessage() throws SocketException {
         String message = null;
         try {
             message = input.readLine();
         } catch (IOException e) {
-            e.printStackTrace();
+
+            if (e instanceof SocketException)
+                throw new SocketException(e.getMessage());
+            else
+                e.printStackTrace();
         }
         return message;
     }
@@ -53,7 +58,7 @@ public class StreamSocket extends Socket {
         }
     }
 
-    public boolean getFile(File file, int size) {
+    public boolean getFile(final File file, final int sizeInBytes) {
         try {
             FileOutputStream fos = new FileOutputStream(file);
             byte[] fileBytes = new byte[1024];
@@ -61,9 +66,9 @@ public class StreamSocket extends Socket {
             int totalRecieved = 0;
             while (-1 != (recieveCount = inStream.read(fileBytes))) {
                 fos.write(fileBytes, 0, recieveCount);
-                System.out.println("Server received " + recieveCount + " of " + file.getName());
+                //System.out.println("Server received " + recieveCount + " of " + file.getName());
                 totalRecieved += recieveCount;
-                if (totalRecieved == size)
+                if (totalRecieved == sizeInBytes)
                     break;
             }
             fos.flush();
@@ -79,14 +84,14 @@ public class StreamSocket extends Socket {
     public boolean sendFile(File file) {
         try {
             outStream.flush();
-            System.out.println("Sending file " + file.getAbsolutePath() + "...");
+            //System.out.println("Sending file " + file.getAbsolutePath() + "...");
             byte[] fileBytes = new byte[1024];
 
             FileInputStream fis = new FileInputStream(file);
             int count;
             while (-1 != (count = fis.read(fileBytes, 0, fileBytes.length))) {
                 outStream.write(fileBytes, 0, count);
-                System.out.println("Sent " + count);
+                //System.out.println("Sent " + count);
                 outStream.flush();
             }
             fis.close();
