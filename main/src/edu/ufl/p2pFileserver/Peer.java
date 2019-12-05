@@ -253,6 +253,7 @@ public class Peer implements IPeer {
             List<Long> remainingFileChunkList = self.getRemainingFileChunkList();
             int initialChunkNums = (int) (remainingFileChunkList.size() * 0.2);
             for (int k = 0; k < initialChunkNums; ++k) {
+                remainingFileChunkList = self.getRemainingFileChunkList();
                 randomFileId = remainingFileChunkList.get(random.nextInt(remainingFileChunkList.size()));
                 self.download(randomFileId + partFileSuffix, self.fOwnerStreamSocket);
             }
