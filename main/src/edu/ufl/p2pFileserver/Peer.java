@@ -269,12 +269,14 @@ public class Peer implements IPeer {
                     //In sync with download neighbor
                     //Download a chunk from FileOwner
                     randomFileId = remainingFileChunkList.get(random.nextInt(remainingFileChunkList.size()));
-                    self.fOwnerStreamSocket.sendMessage("download " + randomFileId);
+                    //self.fOwnerStreamSocket.sendMessage("download " + randomFileId);
+                    self.download(randomFileId + partFileSuffix, self.fOwnerStreamSocket);
                     //Re-sync with download neighbor
                     syncWithDownloadNeighbor(self);
                 } else {
                     randomFileId = downloadNeighborDiff.get(random.nextInt(remainingFileChunkList.size()));
-                    self.downloadStreamSocket.sendMessage("download " + randomFileId);
+                    //self.downloadStreamSocket.sendMessage("download " + randomFileId);
+                    self.download(randomFileId + partFileSuffix, self.downloadStreamSocket);
                 }
                 remainingFileChunkList = self.getRemainingFileChunkList();
 
