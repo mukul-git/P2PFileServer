@@ -46,15 +46,16 @@ public class P2PConnection extends StreamSocket implements Runnable {
                         System.out.println("["+peer.getPeerId()+"]"+"Received dirRequest for peer");
                         Map<Long, Long> localFileChunkListWithSize = peer.getFileChunkListWithSize();
                         StringBuilder dirResponseMsg = new StringBuilder();
-                        if (peer instanceof FileOwner) {
-                            dirResponseMsg.append("dirResponseFOwner ");
-                        } else {
-                            dirResponseMsg.append("dirResponse ");
+                        if (!localFileChunkListWithSize.isEmpty()) {
+                            if (peer instanceof FileOwner) {
+                                dirResponseMsg.append("dirResponseFOwner ");
+                            } else {
+                                dirResponseMsg.append("dirResponse ");
+                            }
+                            localFileChunkListWithSize.forEach((fileId, fileSize) -> {
+                                dirResponseMsg.append(fileId + "," + fileSize + ";");
+                            });
                         }
-                        localFileChunkListWithSize.forEach((fileId, fileSize) -> {
-                            dirResponseMsg.append(fileId + "," + fileSize + ";");
-                        });
-
                         message = dirResponseMsg.toString();
                         sendMessage(message);
                         break;

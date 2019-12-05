@@ -66,7 +66,7 @@ public class StreamSocket extends Socket {
             int totalRecieved = 0;
             while (-1 != (recieveCount = inStream.read(fileBytes))) {
                 fos.write(fileBytes, 0, recieveCount);
-                //System.out.println("Server received " + recieveCount + " of " + file.getName());
+                //System.out.println("Server received " + receiveCount + " of " + file.getName());
                 totalRecieved += recieveCount;
                 if (totalRecieved == sizeInBytes)
                     break;

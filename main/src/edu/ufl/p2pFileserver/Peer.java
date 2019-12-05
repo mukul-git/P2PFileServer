@@ -79,6 +79,7 @@ public class Peer implements IPeer {
     @Override
     public Map<Long, Long> getFileChunkListWithSize() {
 
+        Map<Long, Long> fileChunkListWithSize = new HashMap<>();
         chunkIdToChunkRepo.forEach((id, path) -> {
 
             Path filePath = path;
@@ -90,9 +91,10 @@ public class Peer implements IPeer {
             }
 
             fileIdToSizeMap.putIfAbsent(id, size);
+            fileChunkListWithSize.put(id, size);
         });
 
-        return fileIdToSizeMap;
+        return fileChunkListWithSize;
     }
 
     @Override
@@ -275,7 +277,7 @@ public class Peer implements IPeer {
                     //Re-sync with download neighbor
                     syncWithDownloadNeighbor(self);
                 } else {
-                    randomFileId = downloadNeighborDiff.get(random.nextInt(remainingFileChunkList.size()));
+                    randomFileId = downloadNeighborDiff.get(random.nextInt(downloadNeighborDiff.size()));
                     //self.downloadStreamSocket.sendMessage("download " + randomFileId);
                     self.download(randomFileId + partFileSuffix, self.downloadStreamSocket);
                 }
@@ -381,33 +383,38 @@ public class Peer implements IPeer {
 
     public void processDownloadNeighborFileChunkListMessage(final String message) {
         Map<Long, Long> downloadNeighborFileChunkListWithSize = new HashMap<>();
-        String arg = message.split(" ")[1];
-        String[] fileEntries = arg.split(";");
-        for (String fileEntry : fileEntries) {
-            if (fileEntry != null && !fileEntry.isEmpty()) {
-                String[] fileEntrySplit = fileEntry.split(",");
-                if (fileEntrySplit != null && fileEntrySplit.length == 2) {
-                    long fileId = Long.valueOf(fileEntrySplit[0]);
-                    long fileSizeInBytes = Long.valueOf(fileEntrySplit[1]);
-                    downloadNeighborFileChunkListWithSize.put(fileId, fileSizeInBytes);
+        if (message != null && !message.isEmpty()) {
+            String arg = message.split(" ")[1];
+            String[] fileEntries = arg.split(";");
+            for (String fileEntry : fileEntries) {
+                if (fileEntry != null && !fileEntry.isEmpty()) {
+                    String[] fileEntrySplit = fileEntry.split(",");
+                    if (fileEntrySplit != null && fileEntrySplit.length == 2) {
+                        long fileId = Long.valueOf(fileEntrySplit[0]);
+                        long fileSizeInBytes = Long.valueOf(fileEntrySplit[1]);
+                        downloadNeighborFileChunkListWithSize.put(fileId, fileSizeInBytes);
+                    }
                 }
             }
+            updateDownloadNeighborFileChunkListWithSize(downloadNeighborFileChunkListWithSize);
         }
-        updateDownloadNeighborFileChunkListWithSize(downloadNeighborFileChunkListWithSize);
     }
 
     public void download(final String filename, final StreamSocket streamSocket) throws SocketException {
 
         File file = new File(filename);
-        int fileSize;
+        int fileSize = 0;
 
         streamSocket.sendMessage("receive " + file.getName());
         String headerMessage = streamSocket.receiveMessage();
         if (headerMessage.toLowerCase().contains("error")) {
             System.out.println("[" + selfPort + "] " + headerMessage);
         } else {
-            fileSize = Integer.parseInt(headerMessage);
-
+            try {
+                fileSize = Integer.parseInt(headerMessage);
+            } catch (NumberFormatException e) {
+                System.out.println("NUm");
+            }
             File downloadCopy = new File(getStagingDir().toString(), file.getName());
             boolean isReceivedByClient = streamSocket.getFile(downloadCopy, fileSize);
 
