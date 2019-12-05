@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -37,7 +36,6 @@ public class P2PConnection extends StreamSocket implements Runnable {
                 }
                 String command = message.split(" ")[0];
                 String arg;
-                String[] fileEntries;
                 switch (command) {
 
                     case "connect":

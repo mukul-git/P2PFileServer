@@ -50,7 +50,7 @@ public class Peer implements IPeer {
         System.out.println("Starting Peer at port num " + selfPort + " and use peer at port " + downloadNeighborPort + " as download neighbor");
 
         //Create staging directory
-        stagingDir = new File("p" + selfPort);
+        stagingDir = new File(getPeerId());
         CommonUtils.deleteDirectory(stagingDir);
         stagingDir.mkdirs();
 
@@ -294,8 +294,6 @@ public class Peer implements IPeer {
             }
         }
         collateFiles(new ArrayList<>(self.chunkIdToChunkRepo.values()), rejoinedFilePartDestination);
-
-
     }
 
     private static void syncWithDownloadNeighbor(final Peer peer) throws SocketException {
