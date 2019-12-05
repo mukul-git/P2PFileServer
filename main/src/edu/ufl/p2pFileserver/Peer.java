@@ -325,43 +325,31 @@ public class Peer implements IPeer {
     }
 
     public static void collateFiles(final List<Path> filePartPaths, final File rejoinedFile) {
-
-        FileWriter fileWriter = null;
-        BufferedWriter bufferedWriterOutput = null;
         try {
-            fileWriter = new FileWriter(rejoinedFile, true);
-            bufferedWriterOutput = new BufferedWriter(fileWriter);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+            InputStream in = new FileInputStream(rejoinedFile);
 
-        filePartPaths.sort(Path::compareTo);
-        for (Path filePartPath : filePartPaths) {
-            File filePart = filePartPath.toFile();
-            System.out.println("Merging file part: " + filePart.getName());
-            FileInputStream fis;
-            try {
-                fis = new FileInputStream(filePart);
-                BufferedReader in = new BufferedReader(new InputStreamReader(fis));
 
-                String aLine;
-                while ((aLine = in.readLine()) != null) {
-                    bufferedWriterOutput.write(aLine);
-                    bufferedWriterOutput.newLine();
+            for (Path filePartPath : filePartPaths) {
+                File filePart = filePartPath.toFile();
+                OutputStream out = new FileOutputStream(filePart, true);
+
+                byte[] buf = new byte[8192];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
                 }
 
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                out.close();
+                System.out.println("Merging file part: " + filePart.getName());
             }
-        }
 
-        try {
-            bufferedWriterOutput.close();
+
+            in.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
 
     public void processFileChunkListMessage(final String message) {
