@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../Project2/P2PFileServer/P2PFileServer.iml" filepath="$PROJECT_DIR$/../../Project2/P2PFileServer/P2PFileServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../Project2/P2PFileServer/main.iml" filepath="$PROJECT_DIR$/../../Project2/P2PFileServer/main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../Project2/P2PFileServer/test/test.iml" filepath="$PROJECT_DIR$/../../Project2/P2PFileServer/test/test.iml" />
+    </modules>
+  </component>
+</project>
